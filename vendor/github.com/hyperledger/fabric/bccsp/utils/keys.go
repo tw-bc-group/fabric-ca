@@ -214,6 +214,10 @@ func DERToPrivateKey(der []byte) (key interface{}, err error) {
 		return
 	}
 
+	if key, err = x509GM.ParsePKCS8UnecryptedPrivateKey(der); err == nil {
+		return
+	}
+	
 	return nil, errors.New("Invalid key type. The DER must contain an rsa.PrivateKey or ecdsa.PrivateKey")
 }
 
@@ -347,7 +351,12 @@ func PublicKeyToPEM(publicKey interface{}, pwd []byte) ([]byte, error) {
 				Bytes: PubASN1,
 			},
 		), nil
+	case *sm2.PublicKey:
+		if k == nil {
+			return nil, errors.New("Invalid sm2 public key. It must be different from nil.")
+		}
 
+		return x509GM.WritePublicKeyToPem(k)
 	default:
 		return nil, errors.New("Invalid key type. It must be *ecdsa.PublicKey or *rsa.PublicKey")
 	}
@@ -418,7 +427,12 @@ func PublicKeyToEncryptedPEM(publicKey interface{}, pwd []byte) ([]byte, error) 
 		}
 
 		return pem.EncodeToMemory(block), nil
+	case *sm2.PublicKey:
+		if k == nil {
+			return nil, errors.New("Invalid ecdsa public key. It must be different from nil.")
+		}
 
+		return x509GM.WritePublicKeyToPem(k)
 	default:
 		return nil, errors.New("Invalid key type. It must be *ecdsa.PublicKey")
 	}

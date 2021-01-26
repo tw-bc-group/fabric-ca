@@ -393,3 +393,7 @@ func NewBasicKeyRequest() *BasicKeyRequest {
 	bkr := csr.NewBasicKeyRequest()
 	return &BasicKeyRequest{Algo: bkr.A, Size: bkr.S}
 }
+
+func (info *CSRInfo) IsGMCsrReq() bool {
+	return info.KeyRequest.Algo == "gmsm2"
+}

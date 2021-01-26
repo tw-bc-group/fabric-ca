@@ -213,7 +213,7 @@ func (c *Client) GenCSR(req *api.CSRInfo, id string) ([]byte, bccsp.Key, error) 
 
 	var csrPEM []byte
 
-	if req.KeyRequest.Algo == "gmsm2" {
+	if req.IsGMCsrReq() {
 		csrPEM, err = gmsigner.GenerateGMCsr(cspSigner, cr)
 	} else {
 		csrPEM, err = csr.Generate(cspSigner, cr)
