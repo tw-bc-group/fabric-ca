@@ -25,11 +25,13 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
+	"github.com/Hyperledger-TWGC/tjfoc-gm/sm2"
+	x509GM "github.com/Hyperledger-TWGC/tjfoc-gm/x509"
+	"github.com/hyperledger/fabric/bccsp/gm"
 	"io"
 	"io/ioutil"
 	"math/big"
 	mrand "math/rand"
-	"net/http"
 	"net/url"
 	"os"
 	"path"
@@ -45,6 +47,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
+	"github.com/tw-bc-group/net-go-gm/http"
 	"golang.org/x/crypto/ocsp"
 )
 
@@ -201,6 +204,13 @@ func CreateToken(csp bccsp.BCCSP, cert []byte, key bccsp.Key, method, uri string
 		if err != nil {
 			return "", err
 		}
+	case *sm2.PublicKey:
+		token, err = GenECDSAToken(csp, cert, key, method, uri, body)
+		if err != nil {
+			return "", err
+		}
+	default:
+		log.Debugf("publicKey=%T", publicKey)
 	}
 	return token, nil
 }
@@ -385,6 +395,19 @@ func GetRSAPrivateKey(raw []byte) (*rsa.PrivateKey, error) {
 	return nil, errors.Wrap(err, "Failed parsing RSA private key")
 }
 
+//GetSM2PrivateKey get *sm2.PrivateKey from key pem
+func GetSM2PrivateKey(raw []byte) (*sm2.PrivateKey, error) {
+	decoded, _ := pem.Decode(raw)
+	if decoded == nil {
+		return nil, errors.New("Failed to decode the PEM-encoded sm2 key")
+	}
+	if key, err := x509GM.ParsePKCS8UnecryptedPrivateKey(decoded.Bytes); err == nil {
+		return key, nil
+	} else {
+		return nil, fmt.Errorf("tls: failed to parse sm2 private key %v", err)
+	}
+}
+
 // B64Encode base64 encodes bytes
 func B64Encode(buf []byte) string {
 	return base64.StdEncoding.EncodeToString(buf)
@@ -505,10 +528,17 @@ func GetX509CertificateFromPEM(cert []byte) (*x509.Certificate, error) {
 	if block == nil {
 		return nil, errors.New("Failed to PEM decode certificate")
 	}
-	x509Cert, err := x509.ParseCertificate(block.Bytes)
+	var x509Cert *x509.Certificate
+	x509GMCert, err := x509GM.ParseCertificate(block.Bytes)
 	if err != nil {
-		return nil, errors.Wrap(err, "Error parsing certificate")
+		x509Cert, err = x509.ParseCertificate(block.Bytes)
+		if err != nil {
+			return nil, errors.Wrap(err, "Error parsing certificate")
+		}
+	} else {
+		x509Cert = gm.ParseSm2Certificate2X509(x509GMCert)
 	}
+
 	return x509Cert, nil
 }
 
@@ -522,12 +552,17 @@ func GetX509CertificatesFromPEM(pemBytes []byte) ([]*x509.Certificate, error) {
 		if block == nil {
 			break
 		}
-
-		cert, err := x509.ParseCertificate(block.Bytes)
+		var x509Cert *x509.Certificate
+		x509GMCert, err := x509GM.ParseCertificate(block.Bytes)
 		if err != nil {
-			return nil, errors.Wrap(err, "Error parsing certificate")
+			x509Cert, err = x509.ParseCertificate(block.Bytes)
+			if err != nil {
+				return nil, errors.Wrap(err, "Error parsing certificate")
+			}
+		} else {
+			x509Cert = gm.ParseSm2Certificate2X509(x509GMCert)
 		}
-		certs = append(certs, cert)
+		certs = append(certs, x509Cert)
 	}
 	return certs, nil
 }

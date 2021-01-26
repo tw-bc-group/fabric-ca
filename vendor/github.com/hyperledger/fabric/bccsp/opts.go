@@ -56,6 +56,13 @@ const (
 	// AES Advanced Encryption Standard at 256 bit security level
 	AES256 = "AES256"
 
+	// GMSM4
+	GMSM4 = "GMSM4"
+	// GMSM3
+	GMSM3 = "GMSM3"
+	// GMSM2
+	GMSM2 = "GMSM2"
+
 	// HMAC keyed-hash message authentication code
 	HMAC = "HMAC"
 	// HMACTruncated256 HMAC truncated at 256 bits.
@@ -97,6 +104,75 @@ func (opts *ECDSAKeyGenOpts) Algorithm() string {
 // Ephemeral returns true if the key to generate has to be ephemeral,
 // false otherwise.
 func (opts *ECDSAKeyGenOpts) Ephemeral() bool {
+	return opts.Temporary
+}
+
+type KMSGMSM2KeyGenOpts struct {
+	Temporary bool
+}
+
+func (opts *KMSGMSM2KeyGenOpts) Algorithm() string {
+	return GMSM2
+}
+
+func (opts *KMSGMSM2KeyGenOpts) Ephemeral() bool {
+	return opts.Temporary
+}
+
+type KMSGMSM2KeyImportOpts struct {
+	Temporary bool
+}
+
+func (opts *KMSGMSM2KeyImportOpts) Algorithm() string {
+	return GMSM2
+}
+
+func (opts *KMSGMSM2KeyImportOpts) Ephemeral() bool {
+	return opts.Temporary
+}
+
+// Zhong Huan KeyGen Options
+type ZHGMSM2KeyGenOpts struct {
+	Temporary bool
+}
+
+func (opts *ZHGMSM2KeyGenOpts) Algorithm() string {
+	return GMSM2
+}
+
+func (opts *ZHGMSM2KeyGenOpts) Ephemeral() bool {
+	return opts.Temporary
+}
+
+// GMSM2KeyGenOpts contains options for GMSM2 key generation.
+type GMSM2KeyGenOpts struct {
+	Temporary bool
+}
+
+// Algorithm returns the key generation algorithm identifier (to be used).
+func (opts *GMSM2KeyGenOpts) Algorithm() string {
+	return GMSM2
+}
+
+// Ephemeral returns true if the key to generate has to be ephemeral,
+// false otherwise.
+func (opts *GMSM2KeyGenOpts) Ephemeral() bool {
+	return opts.Temporary
+}
+
+// GMSM4KeyGenOpts contains options for GMSM2 key generation.
+type GMSM4KeyGenOpts struct {
+	Temporary bool
+}
+
+// Algorithm returns the key generation algorithm identifier (to be used).
+func (opts *GMSM4KeyGenOpts) Algorithm() string {
+	return GMSM4
+}
+
+// Ephemeral returns true if the key to generate has to be ephemeral,
+// false otherwise.
+func (opts *GMSM4KeyGenOpts) Ephemeral() bool {
 	return opts.Temporary
 }
 
@@ -248,6 +324,54 @@ func (opts *AES256ImportKeyOpts) Ephemeral() bool {
 	return opts.Temporary
 }
 
+//GMSM4ImportKeyOpts  实现  bccsp.KeyImportOpts 接口
+type GMSM4ImportKeyOpts struct {
+	Temporary bool
+}
+
+// Algorithm returns the key importation algorithm identifier (to be used).
+func (opts *GMSM4ImportKeyOpts) Algorithm() string {
+	return GMSM4
+}
+
+// Ephemeral returns true if the key generated has to be ephemeral,
+// false otherwise.
+func (opts *GMSM4ImportKeyOpts) Ephemeral() bool {
+	return opts.Temporary
+}
+
+//GMSM2PrivateKeyImportOpts  实现  bccsp.KeyImportOpts 接口
+type GMSM2PrivateKeyImportOpts struct {
+	Temporary bool
+}
+
+// Algorithm returns the key importation algorithm identifier (to be used).
+func (opts *GMSM2PrivateKeyImportOpts) Algorithm() string {
+	return GMSM2
+}
+
+// Ephemeral returns true if the key generated has to be ephemeral,
+// false otherwise.
+func (opts *GMSM2PrivateKeyImportOpts) Ephemeral() bool {
+	return opts.Temporary
+}
+
+//GMSM2PublicKeyImportOpts  实现  bccsp.KeyImportOpts 接口
+type GMSM2PublicKeyImportOpts struct {
+	Temporary bool
+}
+
+// Algorithm returns the key importation algorithm identifier (to be used).
+func (opts *GMSM2PublicKeyImportOpts) Algorithm() string {
+	return GMSM2
+}
+
+// Ephemeral returns true if the key generated has to be ephemeral,
+// false otherwise.
+func (opts *GMSM2PublicKeyImportOpts) Ephemeral() bool {
+	return opts.Temporary
+}
+
 // HMACImportKeyOpts contains options for importing HMAC keys.
 type HMACImportKeyOpts struct {
 	Temporary bool
@@ -289,7 +413,7 @@ func (opts *RSAKeyGenOpts) Ephemeral() bool {
 	return opts.Temporary
 }
 
-// ECDSAGoPublicKeyImportOpts contains options for RSA key importation from rsa.PublicKey
+// RSAGoPublicKeyImportOpts contains options for RSA key importation from rsa.PublicKey
 type RSAGoPublicKeyImportOpts struct {
 	Temporary bool
 }

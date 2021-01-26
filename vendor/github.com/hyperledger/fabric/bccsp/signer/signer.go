@@ -56,7 +56,14 @@ func New(csp bccsp.BCCSP, key bccsp.Key) (crypto.Signer, error) {
 		return nil, errors.Wrap(err, "failed marshalling public key")
 	}
 
-	pk, err := utils.DERToPublicKey(raw)
+	var pk interface{}
+
+	if bccsp.IsGMCryptoSuite(csp) {
+		pk, err = utils.DERToGMPublicKey(raw)
+	} else {
+		pk, err = utils.DERToPublicKey(raw)
+	}
+
 	if err != nil {
 		return nil, errors.Wrap(err, "failed marshalling der to public key")
 	}

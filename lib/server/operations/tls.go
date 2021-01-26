@@ -9,6 +9,8 @@ package operations
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"github.com/Hyperledger-TWGC/tjfoc-gm/gmtls"
+	x509GM "github.com/Hyperledger-TWGC/tjfoc-gm/x509"
 	"io/ioutil"
 )
 
@@ -31,6 +33,37 @@ type TLS struct {
 	KeyFile            string
 	ClientCertRequired bool
 	ClientCACertFiles  []string
+}
+
+func (t *TLS) ConfigGM() (*gmtls.Config, error) {
+	var tlsConfig *gmtls.Config
+
+	if t.Enabled {
+		cert, err := gmtls.LoadX509KeyPair(t.CertFile, t.KeyFile)
+		if err != nil {
+			return nil, err
+		}
+		caCertPool := x509GM.NewCertPool()
+		for _, caPath := range t.ClientCACertFiles {
+			caPem, err := ioutil.ReadFile(caPath)
+			if err != nil {
+				return nil, err
+			}
+			caCertPool.AppendCertsFromPEM(caPem)
+		}
+		tlsConfig = &gmtls.Config{
+			Certificates: []gmtls.Certificate{cert},
+			CipherSuites: DefaultTLSCipherSuites,
+			ClientCAs:    caCertPool,
+		}
+		if t.ClientCertRequired {
+			tlsConfig.ClientAuth = gmtls.RequireAndVerifyClientCert
+		} else {
+			tlsConfig.ClientAuth = gmtls.VerifyClientCertIfGiven
+		}
+	}
+
+	return tlsConfig, nil
 }
 
 // Config returns TLS configuration

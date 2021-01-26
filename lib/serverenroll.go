@@ -10,6 +10,8 @@ import (
 	"crypto/x509"
 	"encoding/asn1"
 	"encoding/pem"
+	x509GM "github.com/Hyperledger-TWGC/tjfoc-gm/x509"
+	"github.com/hyperledger/fabric/bccsp/gm"
 	"time"
 
 	"github.com/cloudflare/cfssl/config"
@@ -179,11 +181,20 @@ func processSignRequest(id string, req *signer.SignRequest, ca *CA, ctx *serverR
 		return cferr.Wrap(cferr.CSRError,
 			cferr.BadRequest, errors.New("not a certificate or csr"))
 	}
-	csrReq, err := x509.ParseCertificateRequest(block.Bytes)
+
+	var csrReq *x509.CertificateRequest
+
+	csrReqGM, err := x509GM.ParseCertificateRequest(block.Bytes)
 	if err != nil {
-		return err
+		csrReq, err = x509.ParseCertificateRequest(block.Bytes)
+		if err != nil {
+			return err
+		}
+		log.Debugf("Processing sign request: id=%s, CommonName=%s, Subject=%+v", id, csrReq.Subject.CommonName, req.Subject)
+	} else {
+		csrReq = gm.ParseSm2CertificateRequest2X509(csrReqGM)
 	}
-	log.Debugf("Processing sign request: id=%s, CommonName=%s, Subject=%+v", id, csrReq.Subject.CommonName, req.Subject)
+
 	if (req.Subject != nil && req.Subject.CN != id) || csrReq.Subject.CommonName != id {
 		return errors.New("The CSR subject common name must equal the enrollment ID")
 	}

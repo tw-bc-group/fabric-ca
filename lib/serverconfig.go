@@ -7,8 +7,8 @@ SPDX-License-Identifier: Apache-2.0
 package lib
 
 import (
+	"github.com/hyperledger/fabric-ca/lib/gmtls"
 	"github.com/hyperledger/fabric-ca/lib/server/operations"
-	"github.com/hyperledger/fabric-ca/lib/tls"
 )
 
 const (
@@ -38,7 +38,7 @@ type ServerConfig struct {
 	// Sets the logging level on the server
 	LogLevel string `help:"Set logging level (info, warning, debug, error, fatal, critical)"`
 	// TLS for the server's listening endpoint
-	TLS tls.ServerTLSConfig
+	TLS gmtls.ServerTLSConfig
 	// Optional client config for an intermediate server which acts as a client
 	// of the root (or parent) server
 	Client *ClientConfig `skip:"true"`

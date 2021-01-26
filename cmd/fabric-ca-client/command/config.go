@@ -142,7 +142,7 @@ tls:
 csr:
   cn: <<<ENROLLMENT_ID>>>
   keyrequest:
-    algo: ecdsa
+    algo: gmsm2
     size: 256
     reusekey: false
   serialnumber:
@@ -195,15 +195,17 @@ caname:
 # crypto implementation library to use
 #############################################################################
 bccsp:
-    default: SW
-    sw:
-        hash: SHA2
+    default: GM
+    gm:
+        hash: SM3
         security: 256
         filekeystore:
             # The directory used for the software file-based keystore
             keystore: msp/keystore
 `
 )
+
+//TODO: matrix
 
 // ConfigInit initializes the configuration for the fabric-ca-client command
 func (c *ClientCmd) ConfigInit() error {

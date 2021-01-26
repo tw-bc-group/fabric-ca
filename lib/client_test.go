@@ -10,7 +10,6 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"path"
 	"path/filepath"
@@ -23,11 +22,12 @@ import (
 	. "github.com/hyperledger/fabric-ca/lib"
 	"github.com/hyperledger/fabric-ca/lib/attrmgr"
 	"github.com/hyperledger/fabric-ca/lib/client/credential/x509"
-	"github.com/hyperledger/fabric-ca/lib/tls"
+	"github.com/hyperledger/fabric-ca/lib/gmtls"
 	"github.com/hyperledger/fabric-ca/util"
 	"github.com/hyperledger/fabric/bccsp"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
+	"github.com/tw-bc-group/net-go-gm/http"
 )
 
 var (
@@ -1637,7 +1637,7 @@ func TestRevokedIdentity(t *testing.T) {
 
 	// Bad TLS
 	c.Config.MSPDir = "msp"
-	var kc tls.KeyCertFiles
+	var kc gmtls.KeyCertFiles
 	kc.KeyFile = "../testdata/ec_key.pem"
 	kc.CertFile = "../testdata/expiredcert.pem"
 	c.Config.MSPDir = ""

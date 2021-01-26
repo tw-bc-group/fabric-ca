@@ -26,6 +26,8 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"github.com/Hyperledger-TWGC/tjfoc-gm/sm2"
+	x509GM "github.com/Hyperledger-TWGC/tjfoc-gm/x509"
 )
 
 // struct to hold info required for PKCS#8
@@ -142,6 +144,12 @@ func PrivateKeyToPEM(privateKey interface{}, pwd []byte) ([]byte, error) {
 				Bytes: raw,
 			},
 		), nil
+
+	case *sm2.PrivateKey:
+		if k == nil {
+			return nil, errors.New("Invalid sm2 private key. It must be different from nil.")
+		}
+		return x509GM.WritePrivateKeyToPem(k, nil)
 	default:
 		return nil, errors.New("Invalid key type. It must be *ecdsa.PrivateKey or *rsa.PrivateKey")
 	}
@@ -176,7 +184,11 @@ func PrivateKeyToEncryptedPEM(privateKey interface{}, pwd []byte) ([]byte, error
 		}
 
 		return pem.EncodeToMemory(block), nil
-
+	case *sm2.PrivateKey:
+		if k == nil {
+			return nil, errors.New("Invalid sm2 private key. It must be different from nil.")
+		}
+		return x509GM.WritePrivateKeyToPem(k, pwd)
 	default:
 		return nil, errors.New("Invalid key type. It must be *ecdsa.PrivateKey")
 	}
@@ -452,8 +464,25 @@ func DERToPublicKey(raw []byte) (pub interface{}, err error) {
 	if len(raw) == 0 {
 		return nil, errors.New("Invalid DER. It must be different from nil.")
 	}
-
 	key, err := x509.ParsePKIXPublicKey(raw)
-
 	return key, err
+}
+
+// DERToPublicKey unmarshals a der to public key
+func DERToGMPublicKey(raw []byte) (pub interface{}, err error) {
+	if len(raw) == 0 {
+		return nil, errors.New("Invalid DER. It must be different from nil.")
+	}
+	key, err := x509GM.ParsePKIXPublicKey(raw)
+	if err != nil {
+		return nil, err
+	}
+
+	ecdsaPublicKey, ok := key.(*ecdsa.PublicKey)
+	if ok {
+		if ecdsaPublicKey.Curve == sm2.P256Sm2() {
+			key = &sm2.PublicKey{Curve: sm2.P256Sm2(), X: ecdsaPublicKey.X, Y: ecdsaPublicKey.Y}
+		}
+	}
+	return key, nil
 }

@@ -9,7 +9,7 @@ package lib
 import (
 	"github.com/hyperledger/fabric-ca/api"
 	"github.com/hyperledger/fabric-ca/lib/caerrors"
-	tcert "github.com/hyperledger/fabric-ca/lib/tcert"
+	"github.com/hyperledger/fabric-ca/lib/tcert"
 	"github.com/hyperledger/fabric/bccsp"
 	"github.com/pkg/errors"
 )
@@ -77,6 +77,12 @@ func tcertHandler(ctx *serverRequestContextImpl) (interface{}, error) {
 
 // genRootKey generates a new root key
 func genRootKey(csp bccsp.BCCSP) (bccsp.Key, error) {
-	opts := &bccsp.AES256KeyGenOpts{Temporary: true}
+	var opts bccsp.KeyGenOpts
+	_, err := csp.GetHash(&bccsp.GMSM3Opts{})
+	if err == nil {
+		opts = &bccsp.GMSM4KeyGenOpts{Temporary: true}
+	} else {
+		opts = &bccsp.AES256KeyGenOpts{Temporary: true}
+	}
 	return csp.KeyGen(opts)
 }

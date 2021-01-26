@@ -9,7 +9,7 @@ package idemix
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
+	"github.com/tw-bc-group/net-go-gm/http"
 
 	"github.com/cloudflare/cfssl/log"
 	"github.com/golang/protobuf/proto"
@@ -18,7 +18,7 @@ import (
 	"github.com/hyperledger/fabric-ca/lib/common"
 	"github.com/hyperledger/fabric-ca/util"
 	"github.com/hyperledger/fabric/bccsp"
-	idemix "github.com/hyperledger/fabric/idemix"
+	"github.com/hyperledger/fabric/idemix"
 	"github.com/pkg/errors"
 )
 

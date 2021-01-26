@@ -98,7 +98,7 @@ crlsizelimit: 512000
 #############################################################################
 tls:
   # Enable TLS (default: false)
-  enabled: false
+  enabled: true
   # TLS for the server's listening port
   certfile:
   keyfile:
@@ -341,7 +341,7 @@ signing:
 csr:
    cn: <<<COMMONNAME>>>
    keyrequest:
-     algo: ecdsa
+     algo: gmsm2
      size: 256
    names:
       - C: US
@@ -385,9 +385,9 @@ idemix:
 # crypto library implementation to use
 #############################################################################
 bccsp:
-    default: SW
-    sw:
-        hash: SHA2
+    default: GM
+    gm:
+        hash: GMSM3
         security: 256
         filekeystore:
             # The directory used for the software file-based keystore

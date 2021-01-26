@@ -10,6 +10,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"github.com/Hyperledger-TWGC/tjfoc-gm/gmtls"
 	"io"
 	"net"
 	"net/http"
@@ -192,13 +193,20 @@ func (s *System) listen() (net.Listener, error) {
 	if err != nil {
 		return nil, err
 	}
-	tlsConfig, err := s.options.TLS.Config()
+
+	gmtlsConfig, err := s.options.TLS.ConfigGM()
 	if err != nil {
-		return nil, err
+		tlsConfig, err := s.options.TLS.Config()
+		if err != nil {
+			return nil, err
+		}
+		if tlsConfig != nil {
+			listener = tls.NewListener(listener, tlsConfig)
+		}
+	} else {
+		listener = gmtls.NewListener(listener, gmtlsConfig)
 	}
-	if tlsConfig != nil {
-		listener = tls.NewListener(listener, tlsConfig)
-	}
+
 	return listener, nil
 }
 

@@ -7,9 +7,8 @@ SPDX-License-Identifier: Apache-2.0
 package credential
 
 import (
-	"net/http"
-
 	"github.com/hyperledger/fabric-ca/api"
+	"github.com/tw-bc-group/net-go-gm/http"
 )
 
 // Credential represents an credential of an identity

@@ -142,3 +142,8 @@ type BCCSP interface {
 	// The opts argument should be appropriate for the algorithm used.
 	Decrypt(k Key, ciphertext []byte, opts DecrypterOpts) (plaintext []byte, err error)
 }
+
+func IsGMCryptoSuite(csp BCCSP) bool {
+	_, err := csp.GetHash(&GMSM3Opts{})
+	return err == nil
+}

@@ -7,23 +7,23 @@ SPDX-License-Identifier: Apache-2.0
 package lib
 
 import (
-	"crypto/tls"
 	"crypto/x509"
 	"encoding/hex"
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"path/filepath"
-
+	tls "github.com/Hyperledger-TWGC/tjfoc-gm/gmtls"
+	sm2 "github.com/Hyperledger-TWGC/tjfoc-gm/x509"
 	"github.com/cloudflare/cfssl/log"
 	"github.com/grantae/certinfo"
 	"github.com/hyperledger/fabric-ca/api"
 	"github.com/hyperledger/fabric-ca/util"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
+	"github.com/tw-bc-group/net-go-gm/http"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 )
 
 var clientAuthTypes = map[string]tls.ClientAuthType{
@@ -59,8 +59,8 @@ func BytesToX509Cert(bytes []byte) (*x509.Certificate, error) {
 }
 
 // LoadPEMCertPool loads a pool of PEM certificates from list of files
-func LoadPEMCertPool(certFiles []string) (*x509.CertPool, error) {
-	certPool := x509.NewCertPool()
+func LoadPEMCertPool(certFiles []string) (*sm2.CertPool, error) {
+	certPool := sm2.NewCertPool()
 
 	if len(certFiles) > 0 {
 		for _, cert := range certFiles {
@@ -154,17 +154,6 @@ func IdentityDecoder(decoder *json.Decoder) error {
 		return err
 	}
 	fmt.Printf("Name: %s, Type: %s, Affiliation: %s, Max Enrollments: %d, Attributes: %+v\n", id.ID, id.Type, id.Affiliation, id.MaxEnrollments, id.Attributes)
-	return nil
-}
-
-// AffiliationDecoder decodes streams of data coming from the server into an Affiliation object
-func AffiliationDecoder(decoder *json.Decoder) error {
-	var aff api.AffiliationInfo
-	err := decoder.Decode(&aff)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("%s\n", aff.Name)
 	return nil
 }
 
