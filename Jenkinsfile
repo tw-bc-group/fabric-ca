@@ -3,7 +3,7 @@ def getRepoURL() {
   return readFile(".git/remote-url").trim()
 }
 
-def projectName = "tw-bc-group/fabric-ca-gm"
+def projectName = "hyperledger/fabric-ca"
 
 void setBuildStatus(String message, String state) {
   repoUrl = getRepoURL()
