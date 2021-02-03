@@ -66,7 +66,7 @@ pipeline {
                     catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
                         script {
                             def result = build(
-                                job: 'fabric-sample-gm',
+                                job: 'fabric-samples',
                                 propagate: false,
                                 parameters: [
                                     [$class: 'StringParameterValue', name: 'BYFN_CA', value: 'yes'],
