@@ -13,6 +13,7 @@
 #   - unit-tests - runs the go-test based unit tests
 #   - checks - runs all check conditions (license, format, imports, lint and vet)
 #   - docker[-clean] - ensures all docker images are available[/cleaned]
+#   - docker-list - generates a list of docker images that 'make docker' produces
 #   - docker-fabric-ca - build the fabric-ca docker image
 #   - bench - Runs benchmarks in all the packages and stores the results in /tmp/bench.results
 #   - bench-cpu - Runs the benchmarks in the specified package with cpu profiling
@@ -306,3 +307,9 @@ dist-clean:
 	-@rm -rf release/linux-s390x/hyperledger-fabric-ca-linux-s390x-$(PROJECT_VERSION).tar.gz ||:
 
 .FORCE:
+
+%-docker-list:
+	$(eval TARGET = ${patsubst %-docker-list,%,${@}})
+	@echo $(DOCKER_NS)/fabric-$(TARGET)-gm:$(DOCKER_TAG)
+
+docker-list: $(patsubst %,%-docker-list, $(IMAGES))
