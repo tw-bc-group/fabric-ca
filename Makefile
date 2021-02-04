@@ -286,13 +286,11 @@ dist/linux-ppc64le: release/linux-ppc64le
 dist/linux-s390x: release/linux-s390x
 	cd release/linux-s390x && tar -czvf hyperledger-fabric-ca-linux-s390x-$(PROJECT_VERSION).tar.gz *
 
-
 %-docker-list:
 	$(eval TARGET = ${patsubst %-docker-list,%,${@}})
-	@echo $(DOCKER_NS)/fabric-$(TARGET):$(DOCKER_TAG)
+	@echo $(DOCKER_NS)/$(TARGET):$(DOCKER_TAG)
 
 docker-list: $(patsubst %,%-docker-list, $(IMAGES))
-
 
 .PHONY: clean
 clean: docker-clean release-clean
