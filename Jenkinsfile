@@ -70,7 +70,7 @@ pipeline {
                                 propagate: false,
                                 parameters: [
                                     [$class: 'StringParameterValue', name: 'BYFN_CA', value: 'yes'],
-                                    [$class: 'StringParameterValue', name: 'IMAGE_CA', value: sh(script: 'make ca-docker-list 2>/dev/null ', returnStdout: true).trim()],
+                                    [$class: 'StringParameterValue', name: 'IMAGE_CA', value: sh(script: 'make fabric-ca-docker-list 2>/dev/null ', returnStdout: true).trim()],
                                 ]
                             )
                             if (result.result.equals("SUCCESS")) {
