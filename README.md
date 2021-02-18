@@ -53,7 +53,7 @@ Hyperledger Fabric是用于开发解决方案和应用程序的企业级许可�
 
 本项目使用[CI](https://ci.blockchain.thoughtworks.cn/blue/organizations/jenkins/fabric-gm%2Ffabric-ca/activity/)持续编译并测试，并将镜像发表在dockerhub，可使用镜像：
 
-* [twblockchain/fabric-ca](https://hub.docker.com/repository/docker/twblockchain/fabric-ca)
+* [twblockchain/fabric-ca](https://hub.docker.com/r/twblockchain/fabric-ca)
 
 ### 欢迎反馈
 欢迎各种反馈～ 你可以在[issues页面](https://github.com/tw-bc-group/fabric-gm/issues)提交反馈，我们收到后会尽快处理。
