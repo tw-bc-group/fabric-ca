@@ -21,7 +21,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_NS     = "${DOCKER_REGISTRY}/twbc"
+        DOCKER_NS     = "twblockchain"
         EXTRA_VERSION = "build-${BUILD_NUMBER}"
         GOPATH        = "${WORKSPACE}/gopath"
     }
@@ -43,7 +43,6 @@ pipeline {
         stage('Upload Image') {
             steps {
                 dir("gopath/src/github.com/$projectName") {
-                    sh 'aws ecr get-login-password | docker login --username AWS --password-stdin ${DOCKER_REGISTRY}'
                     sh '''
                     make docker-list 2>/dev/null | grep "$DOCKER_NS" | while read line
                     do
