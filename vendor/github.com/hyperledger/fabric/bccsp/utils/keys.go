@@ -249,6 +249,11 @@ func PEMtoPrivateKey(raw []byte, pwd []byte) (interface{}, error) {
 		}
 		return key, err
 	}
+	
+	key, err := x509GM.ParseSm2PrivateKey(block.Bytes);
+	if err == nil {
+		return key, nil;
+	}
 
 	cert, err := DERToPrivateKey(block.Bytes)
 	if err != nil {
