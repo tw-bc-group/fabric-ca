@@ -1228,13 +1228,24 @@ func validateMatchingKeys(cert *x509.Certificate, keyFile string) error {
 		}
 		//TODO: matrix
 	case *ecdsa.PublicKey:
-		privKey, err := util.GetECPrivateKey(keyPEM)
-		if err != nil {
-			return err
-		}
+		if gm.IsX509SM2Certificate(cert) {
+			sm2PrivKey, err := util.GetSM2PrivateKey(keyPEM)
+			if err != nil {
+				return err
+			}
+			pub := sm2PrivKey.PublicKey
+			if pub.X.Cmp(sm2PrivKey.X) != 0 || pub.Y.Cmp(sm2PrivKey.Y) != 0 {
+				return errors.New("sm2 private key does not match public key")
+			}
+		} else {
+			privKey, err := util.GetECPrivateKey(keyPEM)
+			if err != nil {
+				return err
+			}
 
-		if privKey.PublicKey.X.Cmp(pubKey.(*ecdsa.PublicKey).X) != 0 {
-			return errors.New("Public key and private key do not match")
+			if privKey.PublicKey.X.Cmp(pubKey.(*ecdsa.PublicKey).X) != 0 {
+				return errors.New("Public key and private key do not match")
+			}
 		}
 	}
 
