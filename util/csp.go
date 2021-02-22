@@ -110,7 +110,6 @@ func BccspBackedSigner(caFile, keyFile string, policy *config.Signing, csp bccsp
 		cspSigner = signer
 	}
 
-	//TODO: matrix
 	var backendSigner signer.Signer
 	ecdsaPublicKey, ok := parsedCa.PublicKey.(*ecdsa.PublicKey)
 	if ok && ecdsaPublicKey.Curve == sm2.P256Sm2() {

@@ -310,5 +310,8 @@ func parsePrivateKey(der []byte) (crypto.PrivateKey, error) {
 	if key, err := X.ParsePKCS8UnecryptedPrivateKey(der); err == nil {
 		return key, nil
 	}
+	if key, err := X.ParseSm2PrivateKey(der); err == nil {
+		return key, nil
+	}
 	return nil, errors.New("tls: failed to parse private key")
 }

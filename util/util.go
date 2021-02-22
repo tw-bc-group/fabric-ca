@@ -401,7 +401,7 @@ func GetSM2PrivateKey(raw []byte) (*sm2.PrivateKey, error) {
 	if decoded == nil {
 		return nil, errors.New("Failed to decode the PEM-encoded sm2 key")
 	}
-	if key, err := x509GM.ParsePKCS8UnecryptedPrivateKey(decoded.Bytes); err == nil {
+	if key, err := x509GM.ParseSm2PrivateKey(decoded.Bytes); err == nil {
 		return key, nil
 	} else {
 		return nil, fmt.Errorf("tls: failed to parse sm2 private key %v", err)
