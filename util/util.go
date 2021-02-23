@@ -397,15 +397,23 @@ func GetRSAPrivateKey(raw []byte) (*rsa.PrivateKey, error) {
 
 //GetSM2PrivateKey get *sm2.PrivateKey from key pem
 func GetSM2PrivateKey(raw []byte) (*sm2.PrivateKey, error) {
+	var err error
+	var key *sm2.PrivateKey
+
 	decoded, _ := pem.Decode(raw)
 	if decoded == nil {
 		return nil, errors.New("Failed to decode the PEM-encoded sm2 key")
 	}
-	if key, err := x509GM.ParseSm2PrivateKey(decoded.Bytes); err == nil {
+
+	if key, err = x509GM.ParsePKCS8UnecryptedPrivateKey(decoded.Bytes); err == nil {
 		return key, nil
-	} else {
-		return nil, fmt.Errorf("tls: failed to parse sm2 private key %v", err)
 	}
+
+	if key, err = x509GM.ParseSm2PrivateKey(decoded.Bytes); err == nil {
+		return key, nil
+	}
+
+	return nil, fmt.Errorf("tls: failed to parse sm2 private key %v", err)
 }
 
 // B64Encode base64 encodes bytes
